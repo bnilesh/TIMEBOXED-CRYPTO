@@ -201,7 +201,7 @@ void update_sunrise(int sunrise, char *ltc) {
         set_sunrise_layer_text(sunrise_text);        
     } else {
         set_sunrise_layer_text("");
-        set_sunrise_icon_layer_text("");
+        //set_sunrise_icon_layer_text("");
     }
 }
 
@@ -217,7 +217,7 @@ void update_sunset(int sunset) {
         set_sunset_layer_text(sunset_text);
     } else {
         set_sunset_layer_text("");
-        set_sunset_icon_layer_text("");
+        //set_sunset_icon_layer_text("");
     }
 }
 
@@ -305,8 +305,8 @@ void toggle_weather(uint8_t reload_origin) {
         set_wind_speed_layer_text("");
         set_wind_unit_layer_text("");
         set_sunrise_layer_text("");
-        set_sunrise_icon_layer_text("");
-        set_sunset_icon_layer_text("");
+        //set_sunrise_icon_layer_text("");
+        //set_sunset_icon_layer_text("");
     }
 }
 
