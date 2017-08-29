@@ -205,12 +205,13 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         int sunrise_val = (int)sunrise_tuple->value->int32;
         int sunset_val = (int)sunset_tuple->value->int32;
         char s_ltc[12];
+        char *ltcCurrency = "\0";
       
         if(btc_tuple || eth_tuple || ltc_tuple){
           int btc_val = (int)btc_tuple->value->int32;
           int eth_val = (int)eth_tuple->value->int32;
-          char *ltcCurrency = ltc_tuple->value->cstring;
-          //APP_LOG(APP_LOG_LEVEL_DEBUG, "logging LTC* %s", ltcCurrency);
+          ltcCurrency = ltc_tuple->value->cstring;
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "logging LTC* %s", ltcCurrency);
           snprintf(s_ltc, sizeof(s_ltc), "%s", ltcCurrency);
           sunrise_val = eth_val;
           sunset_val = btc_val;
@@ -218,9 +219,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         update_wind_values(speed_val, direction_val);
         update_sunrise(sunrise_val, s_ltc);
         update_sunset(sunset_val);
-        //APP_LOG(APP_LOG_LEVEL_DEBUG, "logging LTC %s", s_ltc);
-            
-        store_weather_values(temp_val, max_val, min_val, weather_val, speed_val, direction_val, sunrise_val, sunset_val, s_ltc);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "logging LTC %s", s_ltc);
+        
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "logging ltcCurrency %s", ltcCurrency);
+        store_weather_values(temp_val, max_val, min_val, weather_val, speed_val, direction_val, sunrise_val, sunset_val, ltcCurrency);
         return;
     }
 

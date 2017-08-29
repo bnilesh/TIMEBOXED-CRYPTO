@@ -190,22 +190,29 @@ void update_forecast_values(int max_val, int min_val) {
 }
 
 void update_sunrise(int sunrise, char *ltc) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunrise.begin");
+
     if (is_module_enabled(MODULE_SUNRISE)) {
         char sunrise_text[12];
         snprintf(sunrise_text, sizeof(sunrise_text), "%dE/%sL", sunrise, ltc);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunrise.copy done");
+      
         /*time_t temp = (time_t)sunrise;
         struct tm *tick_time = localtime(&temp);
         set_hours(tick_time, sunrise_text, sizeof(sunrise_text));
         set_sunrise_layer_text(sunrise_text);
         set_sunrise_icon_layer_text("\U0000F051");*/
         set_sunrise_layer_text(sunrise_text);        
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunrise.set layer done");
     } else {
         set_sunrise_layer_text("");
         //set_sunrise_icon_layer_text("");
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunrise.end");
 }
 
 void update_sunset(int sunset) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunset.begin");
     if (is_module_enabled(MODULE_SUNSET)) {
         char sunset_text[6];
         snprintf(sunset_text, sizeof(sunset_text), "%dB", sunset);
@@ -219,6 +226,7 @@ void update_sunset(int sunset) {
         set_sunset_layer_text("");
         //set_sunset_icon_layer_text("");
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating sunset.end");
 }
 
 void update_wind_values(int speed, int direction) {
@@ -260,27 +268,39 @@ static bool get_weather_enabled() {
 }
 
 static void update_weather_from_storage() {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.Begin");
+  
     if (persist_exists(KEY_TEMP)) {
         update_weather_values(persist_read_int(KEY_TEMP), persist_read_int(KEY_WEATHER));
     }
-
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.weather done");
     if (persist_exists(KEY_MIN)) {
         update_forecast_values(persist_read_int(KEY_MAX), persist_read_int(KEY_MIN));
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.min-max done");
 
     if (persist_exists(KEY_SPEED)) {
         update_wind_values(persist_read_int(KEY_SPEED), persist_read_int(KEY_DIRECTION));
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.speed-dir done");
 
     if (persist_exists(KEY_SUNRISE)) {
-        char ltcText[12] = "\0";
-        persist_read_string(KEY_LTC, ltcText, strlen(ltcText));
-        update_sunrise(persist_read_int(KEY_SUNRISE), ltcText);    
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.ltc begin");
+        char *bridge_ip = (char *)malloc(sizeof(char) * 16);
+        persist_read_string(KEY_LTC, bridge_ip, (sizeof(char) * 16));
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.ltc end..%s", bridge_ip);
+        update_sunrise(persist_read_int(KEY_SUNRISE), bridge_ip);
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.sunrise ltc end");
+        
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.sunrise done");
 
     if (persist_exists(KEY_SUNSET)) {
         update_sunset(persist_read_int(KEY_SUNSET));
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.sunset done");
+  
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating weather from storage.End");  
 }
 
 void toggle_weather(uint8_t reload_origin) {
@@ -319,7 +339,12 @@ void store_weather_values(int temp, int max, int min, int weather, int speed, in
     persist_write_int(KEY_DIRECTION, direction);
     persist_write_int(KEY_SUNRISE, sunrise);
     persist_write_int(KEY_SUNSET, sunset);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "storing ltc to storage begin...%s", ltc);
+    //char s_ltc[strlen(ltc)] = '\0';
+    //strncpy(s_ltc, ltc, (strlen(ltc) - 1));
+    //snprintf(s_ltc, sizeof(s_ltc), "%s", ltc);
     persist_write_string(KEY_LTC, ltc);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "storing ltc to storage ends...%s", ltc);
 }
 
 bool is_weather_enabled() {
